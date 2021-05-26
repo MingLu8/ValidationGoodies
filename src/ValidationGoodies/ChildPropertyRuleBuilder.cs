@@ -37,7 +37,7 @@ namespace ValidationGoodies
             return AddFailure("must not be empty.");
         }
 
-        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Max(int max)
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Max(dynamic max)
         {
             if (NoCascade && Failed) return this;
             dynamic v = PropertyValue;
@@ -46,7 +46,16 @@ namespace ValidationGoodies
             return AddFailure($"cannot be greater than {max}, You entered {v}.");
         }
 
-        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Length(int min, int max)
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Min(dynamic min)
+        {
+            if (NoCascade && Failed) return this;
+            dynamic v = PropertyValue;
+            if (v >= min) return this;
+
+            return AddFailure($"cannot be less than {min}, You entered {v}.");
+        }
+
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Length(dynamic min, dynamic max)
         {
             if (NoCascade && Failed) return this;
             var length = PropertyValue?.ToString().Length ?? 0;
