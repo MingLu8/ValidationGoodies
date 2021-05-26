@@ -38,7 +38,7 @@ namespace ValidationGoodies
         {
             if (NoCascade && Failed) return this;
             var length = PropertyValue?.ToString().Length ?? 0;
-            if (length < max && length > min) return this;
+            if (length <= max && length >= min) return this;
 
             return AddFailure($"must be between {min} and {max} characters. You entered {length} characters.");
         }
