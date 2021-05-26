@@ -23,7 +23,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(0, 10).Must((propName, propValue, parent, item, context) => { return false;}, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false;}, "rule must failed, third errors.");
                 });
            var order = new Order{Items = new []{ new Item()}};
            
@@ -42,7 +42,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.NotEmpty().Length(0, 10).Must(item => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item() } };
 
@@ -59,7 +59,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(0, 10).Must((propName, propValue, parent, item, context) => { return false; }, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 
@@ -81,7 +81,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.NotEmpty().Length(0, 10).Must((propName, propValue, parent, item, context) => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 

@@ -42,29 +42,10 @@ namespace ValidationGoodies
 
             return AddFailure($"must be between {min} and {max} characters. You entered {length} characters.");
         }
-        public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<TElement, bool> func, string errorMessage)
+      
+        public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<bool> func, string errorMessage)
         {
-            if (NoCascade && Failed || func(InstanceToValidate)) return this;
-
-            return AddFailure(errorMessage);
-        }
-        public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<T, TElement, bool> func, string errorMessage)
-        {
-            if (NoCascade && Failed || func(ParentInstanceToValidate, InstanceToValidate)) return this;
-
-            return AddFailure(errorMessage);
-        }
-
-        public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<T, TElement, ValidationContext<T>, bool> func, string errorMessage)
-        {
-            if (NoCascade && Failed || func(ParentInstanceToValidate, InstanceToValidate, Context)) return this;
-
-            return AddFailure(errorMessage);
-        }
-
-        public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<string, object, T, TElement, ValidationContext<T>, bool> func, string errorMessage)
-        {
-            if (NoCascade && Failed || func(PropertyName, PropertyValue, ParentInstanceToValidate, InstanceToValidate, Context)) return this;
+            if (NoCascade && Failed || func()) return this;
 
             return AddFailure(errorMessage);
         }
