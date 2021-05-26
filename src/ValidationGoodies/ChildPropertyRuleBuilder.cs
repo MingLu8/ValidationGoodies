@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ValidationGoodies
 {
-    public class ChildPropertyRuleBuilder<T, TElement, PropertyType>
+    public class ChildPropertyRuleBuilder<T, TElement, PropertyType> where PropertyType : IComparable
     {
         public bool NoCascade { get; private set; } = true;
         public bool Failed { get; private set; }
@@ -37,25 +37,20 @@ namespace ValidationGoodies
             return AddFailure("must not be empty.");
         }
 
-        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Max(dynamic max)
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Max(PropertyType max)
         {
             if (NoCascade && Failed) return this;
-            dynamic v = PropertyValue;
-            if (v <= max) return this;
-
-            return AddFailure($"cannot be greater than {max}, You entered {v}.");
+            return PropertyValue?.CompareTo(max) <= 0 ? this : AddFailure($"cannot be greater than {max}, You entered {PropertyValue}.");
         }
 
-        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Min(dynamic min)
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Min(PropertyType min)
         {
             if (NoCascade && Failed) return this;
-            dynamic v = PropertyValue;
-            if (v >= min) return this;
 
-            return AddFailure($"cannot be less than {min}, You entered {v}.");
+            return PropertyValue?.CompareTo(min) >= 0 ? this : AddFailure($"cannot be less than {min}, You entered {PropertyValue}.");
         }
 
-        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Length(dynamic min, dynamic max)
+        public virtual ChildPropertyRuleBuilder<T, TElement, PropertyType> Length(int min, int max)
         {
             if (NoCascade && Failed) return this;
             var length = PropertyValue?.ToString().Length ?? 0;
