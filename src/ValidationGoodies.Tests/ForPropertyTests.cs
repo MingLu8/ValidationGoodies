@@ -23,7 +23,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false;}, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(1, 10).Must(() => { return false;}, "rule must failed, third errors.");
                 });
            var order = new Order{Items = new []{ new Item()}};
            
@@ -32,7 +32,7 @@ namespace ValidationGoodies.Tests
            result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(3);
            result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-           result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
+           result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
            result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
         }
 
@@ -42,7 +42,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item() } };
 
@@ -59,7 +59,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 
@@ -68,10 +68,10 @@ namespace ValidationGoodies.Tests
             result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(6);
             result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
+            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
             result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
             result.Errors[3].ErrorMessage.Should().Be("'Items[1].Name' must not be empty.");
-            result.Errors[4].ErrorMessage.Should().Be("'Items[1].Name' must be between 0 and 10 characters. You entered 0 characters.");
+            result.Errors[4].ErrorMessage.Should().Be("'Items[1].Name' must be between 1 and 10 characters. You entered 0 characters.");
             result.Errors[5].ErrorMessage.Should().Be("'Items[1].Name' rule must failed, third errors.");
         }
 
@@ -81,7 +81,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name, builder =>
                 {
-                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 
@@ -91,6 +91,30 @@ namespace ValidationGoodies.Tests
             result.Errors.Count.Should().Be(2);
             result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
             result.Errors[1].ErrorMessage.Should().Be("'Items[1].Name' must not be empty.");
+        }
+
+        [Fact]
+        public async Task MustAsyncTest()
+        {
+            RuleForEach(a => a.Items)
+                .ForPropertyAsync(a => a.Name, async (builder, t) =>
+                { 
+                    await builder.Cascade().NotEmpty().Length(1, 10).MustAsync(CheckAsync, "rule must failed, third errors.");
+                });
+            var order = new Order { Items = new[] { new Item() } };
+
+            var result = await this.ValidateAsync(order);
+
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(3);
+            result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
+            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
+            result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
+        }
+
+        private Task<bool> CheckAsync()
+        {
+            return Task.FromResult(false);
         }
     }
 }

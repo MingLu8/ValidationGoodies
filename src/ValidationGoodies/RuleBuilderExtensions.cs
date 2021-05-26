@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
 
 namespace ValidationGoodies
@@ -16,6 +18,19 @@ namespace ValidationGoodies
                 var propertyValue = GetValue(propertyName, value);
 
                 action(new ChildPropertyRuleBuilder<T, TProperty>(propertyName, propertyValue, value, context));
+                return true;
+            });
+        }
+        public static IRuleBuilderOptionsConditions<T, TProperty> ForPropertyAsync<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder, Expression<Func<TProperty, object>> propertyExpression, Func<ChildPropertyRuleBuilder<T, TProperty>, CancellationToken, Task> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            var propertyName = GetPropertyName<TProperty>(propertyExpression);
+
+            return (IRuleBuilderOptionsConditions<T, TProperty>)ruleBuilder.MustAsync(async (parent, value, context, cancellationToken) => {
+                var propertyValue = GetValue(propertyName, value);
+
+                await action(new ChildPropertyRuleBuilder<T, TProperty>(propertyName, propertyValue, value, context), cancellationToken);
                 return true;
             });
         }

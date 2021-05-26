@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
 
 namespace ValidationGoodies
@@ -46,6 +48,13 @@ namespace ValidationGoodies
         public virtual ChildPropertyRuleBuilder<T, TElement> Must(Func<bool> func, string errorMessage)
         {
             if (NoCascade && Failed || func()) return this;
+
+            return AddFailure(errorMessage);
+        }
+
+        public virtual async Task<ChildPropertyRuleBuilder<T, TElement>> MustAsync(Func<Task<bool>> func, string errorMessage)
+        {
+            if (NoCascade && Failed || await func()) return this;
 
             return AddFailure(errorMessage);
         }
