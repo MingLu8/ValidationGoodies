@@ -16,36 +16,36 @@ namespace ValidationGoodies
             _ruleBuilder = ruleBuilder;
         }
 
-        public virtual IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>, Task> action)
+        public virtual IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRules<T, TProperty, TPropertyType>, Task> action)
         {
             async Task<bool> Func(T parent, TProperty value, ValidationContext<T> context, CancellationToken cancellationToken)
             {
                 var propertyValue = GetPropertyValue(value);
-                await action(new PropertyRuleBuilderContext<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context));
+                await action(new PropertyRules<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context));
                 return true;
             }
 
             return _ruleBuilder.MustAsync((Func<T, TProperty, ValidationContext<T>, CancellationToken, Task<bool>>)Func);
         }
 
-        public virtual IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>, CancellationToken, Task> action)
+        public virtual IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRules<T, TProperty, TPropertyType>, CancellationToken, Task> action)
         {
             async Task<bool> Func(T parent, TProperty value, ValidationContext<T> context, CancellationToken cancellationToken)
             {
                 var propertyValue = GetPropertyValue(value);
-                await action(new PropertyRuleBuilderContext<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context), cancellationToken);
+                await action(new PropertyRules<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context), cancellationToken);
                 return true;
             }
 
             return _ruleBuilder.MustAsync((Func<T, TProperty, ValidationContext<T>, CancellationToken, Task<bool>>)Func);
         }
 
-        public virtual IRuleBuilder<T, TProperty> UseRules(Action<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>> action)
+        public virtual IRuleBuilder<T, TProperty> UseRules(Action<IPropertyRules<T, TProperty, TPropertyType>> action)
         {
             return _ruleBuilder.Must((parent, value, context) => {
                 var propertyValue = GetPropertyValue(value);
 
-                action(new PropertyRuleBuilderContext<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context));
+                action(new PropertyRules<T, TProperty, TPropertyType>(PropertyName, propertyValue, value, context));
                 return true;
             });
         }

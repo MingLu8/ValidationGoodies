@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ValidationGoodies
 {
-    public class PropertyRuleBuilderContext<T, TElement, TPropertyType> : IPropertyRuleBuilderContext<T, TElement, TPropertyType> where TPropertyType : IComparable
+    public class PropertyRules<T, TElement, TPropertyType> : IPropertyRules<T, TElement, TPropertyType> where TPropertyType : IComparable
     {
         public bool NoCascade { get; private set; } = true;
         public bool Failed { get; private set; }
@@ -16,7 +16,7 @@ namespace ValidationGoodies
         public T ParentInstanceToValidate => Context.InstanceToValidate;
         public ValidationContext<T> Context { get; }
 
-        public PropertyRuleBuilderContext(string propertyName, TPropertyType propertyValue, TElement instanceToValidate, ValidationContext<T> context)
+        public PropertyRules(string propertyName, TPropertyType propertyValue, TElement instanceToValidate, ValidationContext<T> context)
         {
             PropertyName = propertyName;
             PropertyValue = propertyValue;
@@ -24,56 +24,67 @@ namespace ValidationGoodies
             Context = context;
         }
 
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> Cascade()
+        public virtual PropertyRules<T, TElement, TPropertyType> Cascade()
         {
             NoCascade = false;
             return this;
         }
 
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> NotEmpty()
+        public virtual PropertyRules<T, TElement, TPropertyType> NotEmpty()
         {
             if (NoCascade && Failed || PropertyValue != null) return this;
 
             return AddFailure("must not be empty.");
         }
 
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> Max(TPropertyType max)
+        public virtual PropertyRules<T, TElement, TPropertyType> Max(TPropertyType max)
         {
             if (NoCascade && Failed) return this;
             return PropertyValue?.CompareTo(max) <= 0 ? this : AddFailure($"cannot be greater than {max}, You entered {PropertyValue}.");
         }
 
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> Min(TPropertyType min)
+        public virtual PropertyRules<T, TElement, TPropertyType> Min(TPropertyType min)
         {
             if (NoCascade && Failed) return this;
 
             return PropertyValue?.CompareTo(min) >= 0 ? this : AddFailure($"cannot be less than {min}, You entered {PropertyValue}.");
         }
 
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> Length(int min, int max)
+        public virtual PropertyRules<T, TElement, TPropertyType> Length(int exactValue)
         {
             if (NoCascade && Failed) return this;
-            var length = PropertyValue?.ToString().Length ?? 0;
-            if (length <= max && length >= min) return this;
 
-            return AddFailure($"must be between {min} and {max} characters. You entered {length} characters.");
+            var length = PropertyValue?.ToString().Length;
+            if (length != null && length == exactValue) return this;
+
+            return AddFailure($"must be {exactValue} characters. You entered {length ?? 0} characters.");
+        }
+
+        public virtual PropertyRules<T, TElement, TPropertyType> Length(int min, int max)
+        {
+            if (NoCascade && Failed) return this;
+
+            var length = PropertyValue?.ToString().Length;
+            if (length != null && length <= max && length >= min) return this;
+
+            return AddFailure($"must be between {min} and {max} characters. You entered {length ?? 0} characters.");
         }
       
-        public virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> Must(Func<bool> func, string errorMessage)
+        public virtual PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func, string errorMessage)
         {
             if (NoCascade && Failed || func()) return this;
 
             return AddFailure(errorMessage);
         }
 
-        public virtual async Task<PropertyRuleBuilderContext<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func, string errorMessage)
+        public virtual async Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func, string errorMessage)
         {
             if (NoCascade && Failed || await func()) return this;
 
             return AddFailure(errorMessage);
         }
 
-        protected virtual PropertyRuleBuilderContext<T, TElement, TPropertyType> AddFailure(string errorMessage)
+        protected virtual PropertyRules<T, TElement, TPropertyType> AddFailure(string errorMessage)
         {
             Failed = true;
             Context.AddFailure(PropertyName, $"'{Context.PropertyName}.{PropertyName}' {errorMessage}");

@@ -7,15 +7,6 @@ using Xunit;
 
 namespace ValidationGoodies.Tests
 {
-    public class Item
-    {
-        public string Name { get; set; }
-        public double Price { get; set; }
-    }
-    public class Order
-    {
-        public IEnumerable<Item> Items { get; set; }
-    }
     public class ForPropertyTests : AbstractValidator<Order>
     {
         [Fact]
@@ -24,7 +15,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name).UseRules(builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(1, 10).Must(() => { return false;}, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false;}, "rule must failed, third errors.");
                 });
            var order = new Order{Items = new []{ new Item()}};
            
@@ -33,7 +24,7 @@ namespace ValidationGoodies.Tests
            result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(3);
            result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-           result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
+           result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
            result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
         }
 
@@ -43,7 +34,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name).UseRules(builder =>
                 {
-                    builder.NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item() } };
 
@@ -60,7 +51,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name).UseRules(builder =>
                 {
-                    builder.Cascade().NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.Cascade().NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 
@@ -69,10 +60,10 @@ namespace ValidationGoodies.Tests
             result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(6);
             result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
+            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
             result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
             result.Errors[3].ErrorMessage.Should().Be("'Items[1].Name' must not be empty.");
-            result.Errors[4].ErrorMessage.Should().Be("'Items[1].Name' must be between 1 and 10 characters. You entered 0 characters.");
+            result.Errors[4].ErrorMessage.Should().Be("'Items[1].Name' must be between 0 and 10 characters. You entered 0 characters.");
             result.Errors[5].ErrorMessage.Should().Be("'Items[1].Name' rule must failed, third errors.");
         }
 
@@ -82,7 +73,7 @@ namespace ValidationGoodies.Tests
             RuleForEach(a => a.Items)
                 .ForProperty(a => a.Name).UseRules(builder =>
                 {
-                    builder.NotEmpty().Length(1, 10).Must(() => { return false; }, "rule must failed, third errors.");
+                    builder.NotEmpty().Length(0, 10).Must(() => { return false; }, "rule must failed, third errors.");
                 });
             var order = new Order { Items = new[] { new Item(), new Item() } };
 
@@ -98,7 +89,7 @@ namespace ValidationGoodies.Tests
         public async Task MustAsyncTest()
         {
             RuleForEach(a => a.Items)
-                .ForProperty(a => a.Name).UseRulesAsync((builder, t) => builder.Cascade().NotEmpty().Length(1, 10).MustAsync(CheckAsync, "rule must failed, third errors."));
+                .ForProperty(a => a.Name).UseRulesAsync((builder, t) => builder.Cascade().NotEmpty().Length(0, 10).MustAsync(CheckAsync, "rule must failed, third errors."));
             var order = new Order { Items = new[] { new Item() } };
 
             var result = await this.ValidateAsync(order);
@@ -106,7 +97,7 @@ namespace ValidationGoodies.Tests
             result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(3);
             result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
+            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
             result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
         }
 
@@ -114,7 +105,7 @@ namespace ValidationGoodies.Tests
         public async Task MustAsync_without_cancellation_token()
         {
             RuleForEach(a => a.Items)
-                .ForProperty(a => a.Name).UseRulesAsync(builder => builder.Cascade().NotEmpty().Length(1, 10).MustAsync(CheckAsync, "rule must failed, third errors."));
+                .ForProperty(a => a.Name).UseRulesAsync(builder => builder.Cascade().NotEmpty().Length(0, 10).MustAsync(CheckAsync, "rule must failed, third errors."));
             var order = new Order { Items = new[] { new Item() } };
 
             var result = await this.ValidateAsync(order);
@@ -122,7 +113,7 @@ namespace ValidationGoodies.Tests
             result.Errors.Should().NotBeEmpty();
             result.Errors.Count.Should().Be(3);
             result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' must not be empty.");
-            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 1 and 10 characters. You entered 0 characters.");
+            result.Errors[1].ErrorMessage.Should().Be("'Items[0].Name' must be between 0 and 10 characters. You entered 0 characters.");
             result.Errors[2].ErrorMessage.Should().Be("'Items[0].Name' rule must failed, third errors.");
         }
 
@@ -169,6 +160,8 @@ namespace ValidationGoodies.Tests
         }
 
         [Theory]
+        [InlineData(null, 5, 10, false)]
+        [InlineData("", 5, 10, false)]
         [InlineData("xx", 5, 10, false)]
         [InlineData("x", 0, 5, true)]
         public async Task Length_test(string value, int min, int max, bool isValid)
@@ -183,12 +176,41 @@ namespace ValidationGoodies.Tests
             var result = await this.ValidateAsync(order);
             result.IsValid.Should().Be(isValid);
             if (!isValid)
-                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' must be between {min} and {max} characters. You entered {value.Length} characters.");
+                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' must be between {min} and {max} characters. You entered {value?.Length ?? 0} characters.");
+        }
+
+        [Theory]
+        [InlineData(null, 5, false)]
+        [InlineData("", 5, false)]
+        [InlineData("xx", 5, false)]
+        [InlineData("x", 1, true)]
+        public async Task Exact_length_test(string value, int exactValue, bool isValid)
+        {
+            RuleForEach(a => a.Items)
+                .ForProperty(a => a.Name).UseRules(builder =>
+                {
+                    builder.Length(exactValue);
+                });
+            var order = new Order { Items = new[] { new Item { Name = value } } };
+
+            var result = await this.ValidateAsync(order);
+            result.IsValid.Should().Be(isValid);
+            if (!isValid)
+                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' must be {exactValue} characters. You entered {value?.Length ?? 0} characters.");
         }
 
         private Task<bool> CheckAsync()
         {
             return Task.FromResult(false);
         }
+    }
+    public class Item
+    {
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+    public class Order
+    {
+        public IEnumerable<Item> Items { get; set; }
     }
 }

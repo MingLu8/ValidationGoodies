@@ -7,8 +7,8 @@ namespace ValidationGoodies
 {
     public interface IPropertyRuleBuilder<T, TProperty, TPropertyType> where TPropertyType : IComparable
     {
-        IRuleBuilder<T, TProperty> UseRules(Action<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>> action);
-        IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>, Task> action);
-        IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRuleBuilderContext<T, TProperty, TPropertyType>, CancellationToken, Task> action);
+        IRuleBuilder<T, TProperty> UseRules(Action<IPropertyRules<T, TProperty, TPropertyType>> action);
+        IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRules<T, TProperty, TPropertyType>, Task> action);
+        IRuleBuilder<T, TProperty> UseRulesAsync(Func<IPropertyRules<T, TProperty, TPropertyType>, CancellationToken, Task> action);
     }
 }
