@@ -102,6 +102,20 @@ namespace ValidationGoodies.Tests
         }
 
         [Fact]
+        public async Task Must_with_default_error_message()
+        {
+            RuleForEach(a => a.Items)
+                .ForProperty(a => a.Name).UseRulesAsync((builder, t) => builder.MustAsync(CheckAsync));
+            var order = new Order { Items = new[] { new Item() } };
+
+            var result = await this.ValidateAsync(order);
+
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(1);
+            result.Errors[0].ErrorMessage.Should().Be("'Items[0].Name' is invalid.");
+        }
+
+        [Fact]
         public async Task MustAsync_without_cancellation_token()
         {
             RuleForEach(a => a.Items)
@@ -198,6 +212,26 @@ namespace ValidationGoodies.Tests
             if (!isValid)
                 result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' must be {exactValue} characters. You entered {value?.Length ?? 0} characters.");
         }
+
+        [Theory]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        [InlineData("xx",  true)]
+        public async Task Matches_test(string value, bool isValid)
+        {
+            RuleForEach(a => a.Items)
+                .ForProperty(a => a.Name).UseRules(builder =>
+                {
+                    builder.Matches(@"^[a-z]+$");
+                });
+            var order = new Order { Items = new[] { new Item { Name = value } } };
+
+            var result = await this.ValidateAsync(order);
+            result.IsValid.Should().Be(isValid);
+            if (!isValid)
+                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' is invalid format.");
+        }
+
 
         private Task<bool> CheckAsync()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -69,13 +70,26 @@ namespace ValidationGoodies
 
             return AddFailure($"must be between {min} and {max} characters. You entered {length ?? 0} characters.");
         }
-      
+
+        public virtual PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func) => Must(func, "is invalid.");
+
         public virtual PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func, string errorMessage)
         {
             if (NoCascade && Failed || func()) return this;
 
             return AddFailure(errorMessage);
         }
+
+        public virtual PropertyRules<T, TElement, TPropertyType> Matches(string expression) => Matches(expression, "is invalid format.");
+
+        public virtual PropertyRules<T, TElement, TPropertyType> Matches(string expression, string errorMessage)
+        {
+            if (PropertyValue != null && Regex.IsMatch(PropertyValue.ToString(), expression)) return this;
+
+            return AddFailure(errorMessage);
+        }
+
+        public virtual Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func) => MustAsync(func, "is invalid.");
 
         public virtual async Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func, string errorMessage)
         {
