@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>8.0</LangVersion>
-    <Version>1.0.10</Version>
+    <Version>1.0.12</Version>
     <Authors>Ming Lu</Authors>
     <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <Description>Contains helper methods for object validation with fluent validations</Description>
