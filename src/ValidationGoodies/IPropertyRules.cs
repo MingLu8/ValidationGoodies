@@ -19,11 +19,11 @@ namespace ValidationGoodies
         PropertyRules<T, TElement, TPropertyType> Min(TPropertyType min);
         PropertyRules<T, TElement, TPropertyType> Length(int min, int max);
         PropertyRules<T, TElement, TPropertyType> Length(int exactValue);
-        PropertyRules<T, TElement, TPropertyType> Matches(string expression);
+        PropertyRules<T, TElement, TPropertyType> Matches(string expression) => Matches(expression, "has invalid format value.");
         PropertyRules<T, TElement, TPropertyType> Matches(string expression, string errorMessage);
-        PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func);
+        PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func) => Must(func, "is invalid.");
         PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func, string errorMessage);
-        Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func);
+        Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func) => MustAsync(func, "is invalid.");
         Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func, string errorMessage);
     }
 }

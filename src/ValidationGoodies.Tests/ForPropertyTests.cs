@@ -229,7 +229,7 @@ namespace ValidationGoodies.Tests
             var result = await this.ValidateAsync(order);
             result.IsValid.Should().Be(isValid);
             if (!isValid)
-                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' is invalid format.");
+                result.Errors[0].ErrorMessage.Should().Be($"'Items[0].Name' has invalid format value.");
         }
 
 

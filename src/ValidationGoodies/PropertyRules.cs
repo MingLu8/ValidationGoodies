@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -33,7 +36,7 @@ namespace ValidationGoodies
 
         public virtual PropertyRules<T, TElement, TPropertyType> NotEmpty()
         {
-            if (NoCascade && Failed || PropertyValue != null) return this;
+            if (NoCascade && Failed || NotEmptyInternal()) return this;
 
             return AddFailure("must not be empty.");
         }
@@ -71,16 +74,12 @@ namespace ValidationGoodies
             return AddFailure($"must be between {min} and {max} characters. You entered {length ?? 0} characters.");
         }
 
-        public virtual PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func) => Must(func, "is invalid.");
-
         public virtual PropertyRules<T, TElement, TPropertyType> Must(Func<bool> func, string errorMessage)
         {
             if (NoCascade && Failed || func()) return this;
 
             return AddFailure(errorMessage);
         }
-
-        public virtual PropertyRules<T, TElement, TPropertyType> Matches(string expression) => Matches(expression, "is invalid format.");
 
         public virtual PropertyRules<T, TElement, TPropertyType> Matches(string expression, string errorMessage)
         {
@@ -89,8 +88,6 @@ namespace ValidationGoodies
             return AddFailure(errorMessage);
         }
 
-        public virtual Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func) => MustAsync(func, "is invalid.");
-
         public virtual async Task<PropertyRules<T, TElement, TPropertyType>> MustAsync(Func<Task<bool>> func, string errorMessage)
         {
             if (NoCascade && Failed || await func()) return this;
@@ -98,6 +95,25 @@ namespace ValidationGoodies
             return AddFailure(errorMessage);
         }
 
+        protected bool NotEmptyInternal()
+        {
+            switch (PropertyValue)
+            {
+                case null:
+                case string s when string.IsNullOrWhiteSpace(s):
+                case ICollection { Count: 0 }:
+                case Array { Length: 0 } c:
+                case IEnumerable e when !e.Cast<object>().Any():
+                    return false;
+            }
+
+            if (Equals(PropertyValue, default(TPropertyType)))
+            {
+                return false;
+            }
+
+            return true;
+        }
         protected virtual PropertyRules<T, TElement, TPropertyType> AddFailure(string errorMessage)
         {
             Failed = true;
